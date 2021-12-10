@@ -8,16 +8,35 @@ def straight_line(line):
         return True
     return False
 
-def points_in_straight_line(line):
-    if line['y1'] == line['y2'] and line['x1'] < line['x2']:
-        return [(x, line['y1']) for x in range(line['x1'], line['x2']+1)]
-    elif line['y1'] == line['y2'] and line['x1'] > line['x2']:
-        return [(x, line['y1']) for x in range(line['x2'], line['x1']+1)]
-    
-    if line['x1'] == line['x2'] and line['y1'] < line['y2']:
-        return [(line['x1'], y) for y in range(line['y1'], line['y2']+1)]
-    elif line['x1'] == line['x2'] and line['y1'] > line['y2']:
-        return [(line['x1'], y) for y in range(line['y2'], line['y1']+1)]
+def points_in_line(line):
+    x1 = line['x1']
+    x2 = line['x2']
+    y1 = line['y1']
+    y2 = line['y2']
+    # right
+    if y1 == y2 and x1 < x2:
+        return [(x, y1) for x in range(x1, x2+1)]
+    # left
+    if y1 == y2 and x1 > x2:
+        return [(x, y1) for x in range(x2, x1+1)]
+    # up
+    if x1 == x2 and y1 < y2:
+        return [(x1, y) for y in range(y1, y2+1)]
+    # down
+    if x1 == x2 and y1 > y2:
+        return [(x1, y) for y in range(y2, y1+1)]
+    # diagonal up-right
+    if x1 < x2 and y1 < y2:
+        return [(x,y) for x,y in zip(range(x1,x2+1), range(y1,y2+1))]
+    # diagonal down-right
+    if x1 < x2 and y1 > y2:
+        return [(x,y) for x,y in zip(range(x1,x2+1), range(y1,y2-1,-1))]
+    # diagonal down-left
+    if x1 > x2 and y1 > y2:
+        return [(x,y) for x,y in zip(range(x1,x2-1,-1), range(y1,y2-1,-1))]
+    # diagonal up-left
+    if x1 > x2 and y1 < y2:
+        return [(x,y) for x,y in zip(range(x1,x2-1,-1), range(y1,y2+1))]
 
 if __name__ == '__main__':
     with open(argv[-1], 'r') as f:
@@ -31,10 +50,22 @@ if __name__ == '__main__':
     points = []
 
     for hydrothermal_vent in straight_hydrothermal_vents:
-        points.append(points_in_straight_line(hydrothermal_vent))
+        points.append(points_in_line(hydrothermal_vent))
 
     points = list(chain(*points))
 
     overlaps_at_least_twice = list(filter(lambda x: x[1] > 1, Counter(points).most_common()))
 
     print(len(overlaps_at_least_twice))
+
+    points = []
+
+    for hydrothermal_vent in hydrothermal_vents:
+        points.append(points_in_line(hydrothermal_vent))
+
+    points = list(chain(*points))
+
+    overlaps_at_least_twice = list(filter(lambda x: x[1] > 1, Counter(points).most_common()))
+
+    print(len(overlaps_at_least_twice))
+    
