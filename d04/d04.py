@@ -37,12 +37,3 @@ if __name__ == '__main__':
         break
     print(scores_times_draw[0])
     print(scores_times_draw[-1])
-    
-
-
-
-        
-
-                    
-                        
-    
