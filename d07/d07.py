@@ -6,7 +6,9 @@ def cost_of_alignment_1(initial_positions, final_position):
     return sum(costs)
 
 def cost_of_alignment_2(initial_positions, final_position):
-    fuel_cost = lambda x: int(0.5 * x ** 2 + 0.5 * x)
+    def fuel_cost(x):
+        return int(0.5 * x ** 2 + 0.5 * x)
+    
     costs = [fuel_cost(abs(final_position - i)) for i in initial_positions]
     return sum(costs)
 
