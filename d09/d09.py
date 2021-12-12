@@ -1,41 +1,42 @@
 from sys import argv
-from itertools import chain, compress
-from types import coroutine
 
-def is_lowpoint(heightmap, x, y):
+def find_neighbours(heightmap, x, y):
     neighbours = {}
-    point = heightmap[y][x]
-    
     if y == 0:
         pass
     else:
-        neighbours['up'] = (heightmap[y-1][x])
+        neighbours['up'] = (heightmap[y-1][x], (x,y-1))
     
     if x == len(heightmap[y])-1:
         pass
     else:
-        neighbours['right'] = heightmap[y][x+1]
+        neighbours['right'] = (heightmap[y][x+1], (x+1,y))
     
     if y == len(heightmap)-1:
         pass
     else:
-        neighbours['down'] = heightmap[y+1][x]
+        neighbours['down'] = (heightmap[y+1][x], (x,y+1))
     
     if x == 0:
         pass
     else:
-        neighbours['left'] = heightmap[y][x-1]
+        neighbours['left'] = (heightmap[y][x-1], (x-1,y))
+    
+    return neighbours
 
-    if all([point < i for i in list(neighbours.values())]):
+def is_lowpoint(heightmap, x, y):
+    neighbours = find_neighbours(heightmap, x, y)
+    
+    if all([heightmap[y][x] < i[0] for i in neighbours.values()]):
         return True
     else:
         return False
 
-def min_mask(heightmap):
-    heightmap_height = len(heightmap)
-    heightmap_width = len(heightmap[0])
+def find_basins(heightmap):
+    min_coordinates = [(x, y) for x in range(100) for y in range(100) if is_lowpoint(heightmap, x, y)]
 
-    return [[is_lowpoint(heightmap, x, y) for x in range(heightmap_width)] for y in range(heightmap_height)]
+
+
 
 def main():
     with open(argv[1], 'r') as f:
@@ -43,8 +44,10 @@ def main():
 
     heightmap = [[int(x) for x in c] for c in heightmap]
     
-    risk_levels = [x + 1 for x in compress(chain(*heightmap), chain(*min_mask(heightmap)))]
-    
+    min_coordinates = [(x, y) for x in range(100) for y in range(100) if is_lowpoint(heightmap, x, y)]
+
+    risk_levels = [heightmap[y][x] + 1 for x,y in min_coordinates]
+
     print(sum(risk_levels))
 
     return None
